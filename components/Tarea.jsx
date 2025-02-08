@@ -33,19 +33,18 @@ const Tarea = ({ Tarea, onToggleComplete, onDelete, onEdit, style }) => {
         </Text>
       </View>
 
-      //mostrar los botones de editar y eliminar solo si la tarea no esta es estado completada
+      {/*mostrar los botones de editar y eliminar solo si la tarea no esta es estado completada*/}
       {!Tarea.completed && (
         <TouchableOpacity onPress={confirmarEliminacion} style={styles.iconButton}>
           <Icon name="trash" size={20} color="red" />
         </TouchableOpacity>
       )}
 
-      //mostrar el boton de eliminar para las tareas en estado completada
+      {/*mostrar el boton de eliminar para las tareas en estado completada*/}
       <TouchableOpacity onPress={confirmarEliminacion} style={[styles.iconButton, { right: 10 }]}>
         <Icon name="trash" size={20} color="red" />
       </TouchableOpacity>
 
-      {/* El botón de editar solo está disponible para las tareas no completadas */}
       {!Tarea.completed && (
         <TouchableOpacity onPress={() => onEdit(Tarea)} style={[styles.iconButton, { right: 40 }]}>
           <Icon name="edit" size={20} color="blue" />

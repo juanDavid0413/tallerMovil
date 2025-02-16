@@ -1,27 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert, ImageBackground } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Alert,
+  ImageBackground,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const Formulario = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { Tareas, actualizarTareas, añadirTareas } = route.params;
+  const { Tareas, actualizarTareas, añadirTareas, eliminarTareas } =
+    route.params;
 
-  const [TareasText, setTareasText] = useState(Tareas ? Tareas.text : '');
+  const [TareasText, setTareasText] = useState(Tareas ? Tareas.text : "");
 
   const guardar = () => {
-    if (TareasText.trim() === '') {
-      Alert.alert('Error', 'Por favor, ingresa el texto de la tarea.');
+    if (TareasText.trim() === "") {
+      Alert.alert("Error", "Por favor, ingresa el texto de la tarea.");
       return;
     }
 
     if (Tareas) {
       const tareaActualizada = { ...Tareas, text: TareasText };
+      console.log("Actualizando tarea:", tareaActualizada);
       actualizarTareas(tareaActualizada);
-      Alert.alert('Éxito', 'Tarea editada correctamente');
+      Alert.alert("Éxito", "Tarea editada correctamente");
     } else {
+      console.log("Agregando tarea:", TareasText);
       añadirTareas(TareasText);
-      Alert.alert('Éxito', 'Tarea agregada correctamente');
+      Alert.alert("Éxito", "Tarea agregada correctamente");
     }
 
     navigation.goBack();
@@ -33,91 +48,132 @@ const Formulario = () => {
     }
   }, [Tareas]);
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor: "rgba(228, 217, 217, 0.91)",
+      },
+    });
+  }, [navigation]);
+
   return (
-    
-    <ImageBackground
-          source={{ uri: 'https://i.pinimg.com/236x/64/ec/83/64ec83f347aad4cc838680712d5344c2.jpg' }}
-          style={styles.container}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
     >
-      <Text style={styles.header}>{Tareas ? 'Editar Tarea' : 'Agregar Tarea'}</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={{ flex: 1 }}>
+          <ImageBackground
+            source={{
+              uri: "https://i.pinimg.com/236x/0a/9e/36/0a9e3623870b54b2f1b4851e348cc1e4.jpg",
+            }}
+            style={styles.container}
+            imageStyle={{ borderRadius: 15 }}
+          >
+            <View style={styles.formContainer}>
+              <Text style={styles.header}>
+                {Tareas ? "Editar Tarea" : "Agregar Tarea"}
+              </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Escribe aquí tu tarea"
+                value={TareasText}
+                onChangeText={setTareasText}
+                placeholderTextColor="#9CA3AF"
+                multiline
+              />
+              <TouchableOpacity style={styles.button} onPress={guardar}>
+                <Text style={styles.buttonText}>
+                  {Tareas ? "Guardar Cambios" : "Agregar Tarea"}
+                </Text>
+              </TouchableOpacity>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Escribe aquí tu tarea"
-        value={TareasText}
-        onChangeText={setTareasText}
-        placeholderTextColor="#9CA3AF"
-      />
-
-      <TouchableOpacity style={styles.button} onPress={guardar}>
-        <Text style={styles.buttonText}>{Tareas ? 'Guardar Cambios' : 'Agregar Tarea'}</Text>
-      </TouchableOpacity>
-
-      {Tareas && (
-        <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
-          onPress={() => {
-            Alert.alert('Confirmación', '¿Estás seguro de que deseas eliminar esta tarea?', [
-              {
-                text: 'Cancelar',
-                style: 'cancel',
-              },
-              {
-                text: 'Eliminar',
-                onPress: () => {
-                  Alert.alert('Éxito', 'Tarea eliminada correctamente');
-                  navigation.goBack();
-                },
-              },
-            ]);
-          }}
-        >
-          <Text style={styles.buttonText}>Eliminar Tarea</Text>
-        </TouchableOpacity>
-      )}
-    </ImageBackground>
+              {Tareas && (
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonEliminar]}
+                  onPress={() => {
+                    Alert.alert(
+                      "Confirmación",
+                      "¿Estás seguro de que deseas eliminar esta tarea?",
+                      [
+                        { text: "Cancelar", style: "cancel" },
+                        {
+                          text: "Eliminar",
+                          onPress: () => {
+                            eliminarTareas(Tareas.id);
+                            Alert.alert(
+                              "Éxito",
+                              "Tarea eliminada correctamente"
+                            );
+                            navigation.goBack();
+                          },
+                        },
+                      ]
+                    );
+                  }}
+                >
+                  <Text style={styles.buttonText}>Eliminar Tarea</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </ImageBackground>
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 20,
-    backgroundColor: '#F9FAFB', 
+  },
+  formContainer: {
+    position: 'absolute',
+    top: 100,
+    height: '60%',
+    width: "100%",
+    backgroundColor: "rgba(228, 217, 217, 0.91)",
+    borderRadius: 15,
+    elevation: 5,
+    padding: 15,
   },
   header: {
-    fontSize: 28,
-    fontWeight: '600',
+    fontSize: 22,
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
-    color: 'black',
+    textAlign: "center",
+    color: "#333",
   },
   input: {
-    height: 100,
-    borderColor: '#D1D5DB',
+    height: 150,
+    borderColor: "#D1D5DB",
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 16,
     borderRadius: 8,
     fontSize: 18,
-    backgroundColor: '#FFFFFF',
-    color: '#374151', 
+    backgroundColor: "#FFFFFF",
+    color: "#374151",
+    textAlignVertical: "top",
   },
   button: {
-    backgroundColor: '#3B82F6', 
+    backgroundColor: "rgba(69, 134, 136, 0.99)",
     paddingVertical: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 12,
+    
   },
   buttonText: {
     fontSize: 18,
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
-  deleteButton: {
-    backgroundColor: '#EF4444', 
+  buttonEliminar: {
+    backgroundColor: "#EF4444",
   },
 });
 

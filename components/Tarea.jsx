@@ -19,7 +19,7 @@ const Tarea = ({ Tarea, onToggleComplete, onDelete, onEdit, style }) => {
     <View style={[style, styles.container]}>
       <Text style={styles.text}>{Tarea.text}</Text>
 
-      <View style={styles.toggleContainer}>
+      <View style={styles.alternarContenedor}>
         <TouchableOpacity
           style={[
             styles.checkbox,
@@ -28,19 +28,17 @@ const Tarea = ({ Tarea, onToggleComplete, onDelete, onEdit, style }) => {
           onPress={() => onToggleComplete(Tarea.id)}
         />
         
-        <Text style={styles.toggleText}>
+        <Text style={styles.alternarTexto}>
           {Tarea.completed ? 'Marcar como pendiente' : 'Marcar como terminada'}
         </Text>
       </View>
 
-      {/*mostrar los botones de editar y eliminar solo si la tarea no esta es estado completada*/}
       {!Tarea.completed && (
         <TouchableOpacity onPress={confirmarEliminacion} style={styles.iconButton}>
           <Icon name="trash" size={20} color="red" />
         </TouchableOpacity>
       )}
 
-      {/*mostrar el boton de eliminar para las tareas en estado completada*/}
       <TouchableOpacity onPress={confirmarEliminacion} style={[styles.iconButton, { right: 10 }]}>
         <Icon name="trash" size={20} color="red" />
       </TouchableOpacity>
@@ -66,7 +64,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
-  toggleContainer: {
+  alternarContenedor: {
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -79,7 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
   },
-  toggleText: {
+  alternarTexto: {
     fontSize: 14,
   },
   iconButton: {
